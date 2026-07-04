@@ -8,14 +8,13 @@ assignees: ""
 
 # Goal
 
-# As Is（現状、タスク前）
+# As Is
 
-# To Be（目標、タスク後）
+# To Be
 
 # Todo List
 - [ ]
 - [ ]
-
 
 # Note
 
