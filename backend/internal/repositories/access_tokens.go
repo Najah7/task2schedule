@@ -1,0 +1,84 @@
+package repositories
+
+import (
+	"context"
+	"time"
+
+	"github.com/Najah7/task2schedule/internal/domain/auth"
+	"github.com/Najah7/task2schedule/internal/repositories/sqlc"
+	"github.com/jackc/pgx/v5/pgtype"
+)
+
+var _ auth.AccessTokenRepository = AccessTokenRepository{}
+
+type AccessTokenRepository struct {
+	queries *sqlc.Queries
+}
+
+func NewAccessTokenRepository(db sqlc.DBTX) *AccessTokenRepository {
+	queries := sqlc.New(db)
+	return &AccessTokenRepository{
+		queries: queries,
+	}
+}
+
+func recordToAccessToken(t sqlc.AccessToken) (auth.AccessToken, error) {
+	userID, err := auth.NewUserID(t.UserID)
+	if err != nil {
+		return auth.NewZeroAccessToken(), err
+	}
+	accessToken, err := auth.NewExistingAccessToken(t.Token, userID, t.ExpiresAt.Time.Unix(), t.RevokedAt.Time.Unix(), t.CreatedAt.Time.Unix())
+	if err != nil {
+		return auth.NewZeroAccessToken(), err
+	}
+
+	return accessToken, nil
+}
+
+func (r AccessTokenRepository) GetByToken(ctx context.Context, token string) (auth.AccessToken, error) {
+	t, err := r.queries.GetAccessTokenByToken(ctx, token)
+	if err != nil {
+		return auth.NewZeroAccessToken(), err
+	}
+
+	return recordToAccessToken(t)
+
+}
+
+func (r AccessTokenRepository) Create(ctx context.Context, token auth.AccessToken) (auth.AccessToken, error) {
+	expiresAt := pgtype.Timestamptz{}
+	err := expiresAt.Scan(time.Unix(token.ExpiresAt, 0))
+	if err != nil {
+		return auth.NewZeroAccessToken(), err
+	}
+
+	t, err := r.queries.CreateAccessToken(ctx, sqlc.CreateAccessTokenParams{
+		Token:     token.Token,
+		UserID:    string(token.UserID),
+		ExpiresAt: expiresAt,
+	})
+	if err != nil {
+		return auth.NewZeroAccessToken(), err
+	}
+
+	return recordToAccessToken(t)
+}
+
+func (r AccessTokenRepository) Revoke(ctx context.Context, token string) error {
+	revokedAt := pgtype.Timestamptz{}
+	err := revokedAt.Scan(time.Now())
+	if err != nil {
+		return err
+	}
+
+	err = r.queries.RevokeAccessToken(ctx, sqlc.RevokeAccessTokenParams{
+		Token:     token,
+		RevokedAt: revokedAt,
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
