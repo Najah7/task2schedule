@@ -20,8 +20,15 @@ services:
     ports:
       - "5432:5432"
   
-  
-
+  migrate:
+    container_name: task2schedule-migrate
+    image: migrate/migrate:v4.19.1
+    networks:
+      - backend
+    volumes:
+      - ${PROJECT_ROOT}/db/migrations:/db/migrations
+    depends_on:
+      - db
 
 networks:
   backend:
