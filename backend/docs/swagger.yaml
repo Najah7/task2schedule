@@ -1,0 +1,288 @@
+basePath: /api
+definitions:
+  handlers.AccessTokenGenerateRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  handlers.AccessTokenResponse:
+    properties:
+      expires_at:
+        type: string
+      token:
+        type: string
+    type: object
+  handlers.Err:
+    properties:
+      code:
+        type: string
+      details:
+        items:
+          $ref: '#/definitions/handlers.ErrDetail'
+        type: array
+      message:
+        type: string
+      request_id:
+        type: string
+    type: object
+  handlers.ErrDetail:
+    properties:
+      code:
+        type: string
+      field:
+        type: string
+      message:
+        type: string
+    type: object
+  handlers.ErrResponse:
+    properties:
+      error:
+        $ref: '#/definitions/handlers.Err'
+    type: object
+  handlers.HealthResponse:
+    properties:
+      status:
+        type: string
+    type: object
+  handlers.MessageResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  handlers.UserCreateRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  handlers.UserInfoUpdateRequest:
+    properties:
+      first_name:
+        type: string
+      last_name:
+        type: string
+    type: object
+  handlers.UserPasswordUpdateRequest:
+    properties:
+      new_password:
+        type: string
+    type: object
+  handlers.UserResponse:
+    properties:
+      email:
+        type: string
+      user_id:
+        type: string
+      user_name:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Task scheduling API server.
+  title: task2schedule API
+  version: "1.0"
+paths:
+  /access-token/current:
+    delete:
+      description: Revokes the current access token from the Authorization header.
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.MessageResponse'
+        "401":
+          description: Missing or invalid access token
+          schema:
+            $ref: '#/definitions/handlers.ErrResponse'
+        "500":
+          description: Failed to revoke access token
+          schema:
+            $ref: '#/definitions/handlers.ErrResponse'
+      security:
+      - BearerAuth: []
+      summary: Revoke access token
+      tags:
+      - Auth
+  /access-tokens:
+    post:
+      consumes:
+      - application/json
+      description: Generates a new access token for a user.
+      parameters:
+      - description: Access token generate request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.AccessTokenGenerateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.AccessTokenResponse'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/handlers.ErrResponse'
+        "401":
+          description: Invalid email or password
+          schema:
+            $ref: '#/definitions/handlers.ErrResponse'
+        "500":
+          description: Failed to generate access token
+          schema:
+            $ref: '#/definitions/handlers.ErrResponse'
+      summary: Generate access token
+      tags:
+      - Auth
+  /monitor/health:
+    get:
+      description: Returns the API health status.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.HealthResponse'
+        "500":
+          description: Failed to marshal response
+          schema:
+            $ref: '#/definitions/handlers.ErrResponse'
+      summary: Check API health
+      tags:
+      - Monitoring
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: Creates a user with an email address and password.
+      parameters:
+      - description: User create request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UserCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handlers.UserResponse'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/handlers.ErrResponse'
+        "500":
+          description: Failed to create user
+          schema:
+            $ref: '#/definitions/handlers.ErrResponse'
+      summary: Create user
+      tags:
+      - Auth
+  /users/me:
+    get:
+      description: Returns the authenticated user's profile.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.UserResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrResponse'
+        "500":
+          description: Failed to get user
+          schema:
+            $ref: '#/definitions/handlers.ErrResponse'
+      security:
+      - BearerAuth: []
+      summary: Get current user
+      tags:
+      - Auth
+    patch:
+      consumes:
+      - application/json
+      description: Updates the authenticated user's first and last name.
+      parameters:
+      - description: User basic info update request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UserInfoUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.UserResponse'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/handlers.ErrResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrResponse'
+        "500":
+          description: Failed to update user
+          schema:
+            $ref: '#/definitions/handlers.ErrResponse'
+      security:
+      - BearerAuth: []
+      summary: Update current user basic info
+      tags:
+      - Auth
+  /users/me/password:
+    patch:
+      consumes:
+      - application/json
+      description: Updates the authenticated user's password.
+      parameters:
+      - description: User password update request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UserPasswordUpdateRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.MessageResponse'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/handlers.ErrResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.ErrResponse'
+        "500":
+          description: Failed to update password
+          schema:
+            $ref: '#/definitions/handlers.ErrResponse'
+      security:
+      - BearerAuth: []
+      summary: Update current user password
+      tags:
+      - Auth
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
