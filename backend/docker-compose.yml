@@ -45,6 +45,20 @@ services:
     depends_on:
       - db
 
+  swagger:
+    container_name: task2schedule-swagger
+    build:
+      context: ${PROJECT_ROOT}
+      dockerfile_inline: |
+        FROM golang:1.25-alpine
+        RUN apk add --no-cache git
+        RUN go install github.com/swaggo/swag/cmd/swag@v1.16.6
+        ENTRYPOINT ["swag"]
+    working_dir: /code
+    volumes:
+      - ${PROJECT_ROOT}:/code
+
+
 networks:
   backend:
 volumes:
