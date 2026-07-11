@@ -27,7 +27,13 @@ func recordToAccessToken(t sqlc.AccessToken) (auth.AccessToken, error) {
 	if err != nil {
 		return auth.NewZeroAccessToken(), err
 	}
-	accessToken, err := auth.NewExistingAccessToken(t.Token, userID, t.ExpiresAt.Time.Unix(), t.RevokedAt.Time.Unix(), t.CreatedAt.Time.Unix())
+	accessToken, err := auth.NewExistingAccessToken(
+		t.Token,
+		userID,
+		pgTimeUnix(t.ExpiresAt),
+		pgTimeUnix(t.RevokedAt),
+		pgTimeUnix(t.CreatedAt),
+	)
 	if err != nil {
 		return auth.NewZeroAccessToken(), err
 	}
@@ -82,3 +88,10 @@ func (r AccessTokenRepository) Revoke(ctx context.Context, token string) error {
 	return nil
 }
 
+func pgTimeUnix(t pgtype.Timestamptz) int64 {
+	if !t.Valid {
+		return 0
+	}
+
+	return t.Time.Unix()
+}

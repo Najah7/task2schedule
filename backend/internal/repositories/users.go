@@ -27,7 +27,7 @@ func recordToUser(record sqlc.User) (auth.User, error) {
 		return auth.NewZeroUser(), err
 	}
 
-	p, err := auth.NewPassword(record.Password)
+	p, err := auth.NewHashedPassword(record.Password)
 	if err != nil {
 		return auth.NewZeroUser(), err
 	}
