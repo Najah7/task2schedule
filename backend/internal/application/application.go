@@ -16,7 +16,7 @@ import (
 type config struct {
 }
 
-type logger interface {}
+type logger interface{}
 
 type Store struct {
 	Users        *repositories.UserRepository

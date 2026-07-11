@@ -24,7 +24,6 @@ func makeUserInputs(t *testing.T) (UserID, Email, Password) {
 	return id, email, password
 }
 
-
 func TestUserLifecycle(t *testing.T) {
 	id, email, password := makeUserInputs(t)
 	user := NewUser(id, email, password, NewUserName("", ""))
