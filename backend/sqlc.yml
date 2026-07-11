@@ -1,0 +1,16 @@
+version: "2"
+
+sql:
+  - engine: "postgresql"
+    schema: "./db/migrations"
+    queries: "./db/queries"
+    gen:
+      go:
+        package: "sqlc"
+        out: "./internal/repositories/sqlc"
+        sql_package: "pgx/v5"
+        overrides:
+          - db_type: "json"
+            go_type:
+              import: "encoding/json"
+              type: "RawMessage"

@@ -30,6 +30,21 @@ services:
     depends_on:
       - db
 
+  sqlc:
+    container_name: task2schedule-sqlc
+    image: sqlc/sqlc:1.31.1
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - ${PROJECT_ROOT}/sqlc.yml:/sqlc.yml
+      - ${PROJECT_ROOT}/db/migrations:/db/migrations
+      - ${PROJECT_ROOT}/db/queries:/db/queries
+      - ${PROJECT_ROOT}/internal/repositories/sqlc:/internal/repositories/sqlc
+    depends_on:
+      - db
+
 networks:
   backend:
 volumes:
