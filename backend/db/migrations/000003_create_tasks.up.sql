@@ -60,7 +60,7 @@ CREATE TABLE tasks (
     status text NOT NULL DEFAULT 'open' REFERENCES task_status_master(status) ON DELETE RESTRICT,
     created_at timestamptz NOT NULL DEFAULT now(),
     updated_at timestamptz NOT NULL DEFAULT now(),
-    FOREIGN KEY (project_id, user_id) REFERENCES projects(id, user_id) ON DELETE SET NULL (project_id)
+    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE SET NULL
 );
 
 CREATE TABLE task_tags (
@@ -104,11 +104,10 @@ CREATE TABLE task_schedules (
 
 CREATE TABLE task_schedule_frequencies (
     task_schedule_id text NOT NULL REFERENCES task_schedules(id) ON DELETE CASCADE,
-    -- e.g. weekend: "sat,sun", weekdays: "mon,tue,wed,thu,fri", once: "once"
-    frequency text NOT NULL CHECK (btrim(frequency) <> ''),
+    frequency text NOT NULL REFERENCES task_frequency_master(frequency) ON DELETE RESTRICT,
     interval_weeks integer NOT NULL DEFAULT 1 CHECK (interval_weeks >= 1),
     created_at timestamptz NOT NULL DEFAULT now(),
-    PRIMARY KEY (task_schedule_id)
+    PRIMARY KEY (task_schedule_id, frequency)
 );
 
 CREATE TABLE todo_items (
@@ -126,11 +125,10 @@ CREATE TABLE todo_items (
 
 CREATE TABLE todo_item_frequencies (
     todo_item_id text NOT NULL REFERENCES todo_items(id) ON DELETE CASCADE,
-    -- e.g. weekend: "sat,sun", weekdays: "mon,tue,wed,thu,fri", once: "once"
-    frequency text NOT NULL CHECK (btrim(frequency) <> ''),
+    frequency text NOT NULL REFERENCES task_frequency_master(frequency) ON DELETE RESTRICT,
     interval_weeks integer NOT NULL DEFAULT 1 CHECK (interval_weeks >= 1),
     created_at timestamptz NOT NULL DEFAULT now(),
-    PRIMARY KEY (todo_item_id)
+    PRIMARY KEY (todo_item_id, frequency)
 );
 
 CREATE TABLE todo_list_items (
