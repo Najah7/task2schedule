@@ -108,7 +108,7 @@ erDiagram
 
     task_schedule_frequencies {
         text task_schedule_id PK,FK
-        text frequency
+        text frequency PK,FK
         integer interval_weeks
         timestamptz created_at
     }
@@ -126,7 +126,7 @@ erDiagram
 
     todo_item_frequencies {
         text todo_item_id PK,FK
-        text frequency
+        text frequency PK,FK
         integer interval_weeks
         timestamptz created_at
     }
@@ -154,10 +154,12 @@ erDiagram
     task_status_master ||--o{ tasks : tracks
     tasks ||--o{ todo_items : has
     tasks ||--o{ task_schedules : schedules
-    task_schedules ||--o| task_schedule_frequencies : repeats
+    task_schedules ||--o{ task_schedule_frequencies : repeats
+    task_frequency_master ||--o{ task_schedule_frequencies : allows
     tasks ||--o{ task_tag_assignments : tagged_by
     task_tags ||--o{ task_tag_assignments : assigned_to
-    todo_items ||--o| todo_item_frequencies : repeats
+    todo_items ||--o{ todo_item_frequencies : repeats
+    task_frequency_master ||--o{ todo_item_frequencies : allows
     todo_lists ||--o{ todo_list_items : contains
     todo_items ||--o{ todo_list_items : listed_in
     todo_lists ||--o{ todo_list_task_schedules : includes
