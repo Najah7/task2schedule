@@ -12,42 +12,35 @@ import (
 )
 
 const createTodoItem = `-- name: CreateTodoItem :one
-INSERT INTO todo_items (id, task_id, title, completed, position)
-VALUES ($1, $2, $3, $4, $5)
-RETURNING id, task_id, title, completed, position, created_at, updated_at
+INSERT INTO todo_items (id, task_id, title, description, completed, position)
+VALUES ($1, $2, $3, $4, $5, $6)
+RETURNING id, task_id, title, description, completed, position, created_at, updated_at
 `
 
 type CreateTodoItemParams struct {
-	ID        string
-	TaskID    string
-	Title     string
-	Completed bool
-	Position  int32
+	ID          string
+	TaskID      string
+	Title       string
+	Description pgtype.Text
+	Completed   bool
+	Position    int32
 }
 
-type CreateTodoItemRow struct {
-	ID        string
-	TaskID    string
-	Title     string
-	Completed bool
-	Position  int32
-	CreatedAt pgtype.Timestamptz
-	UpdatedAt pgtype.Timestamptz
-}
-
-func (q *Queries) CreateTodoItem(ctx context.Context, arg CreateTodoItemParams) (CreateTodoItemRow, error) {
+func (q *Queries) CreateTodoItem(ctx context.Context, arg CreateTodoItemParams) (TodoItem, error) {
 	row := q.db.QueryRow(ctx, createTodoItem,
 		arg.ID,
 		arg.TaskID,
 		arg.Title,
+		arg.Description,
 		arg.Completed,
 		arg.Position,
 	)
-	var i CreateTodoItemRow
+	var i TodoItem
 	err := row.Scan(
 		&i.ID,
 		&i.TaskID,
 		&i.Title,
+		&i.Description,
 		&i.Completed,
 		&i.Position,
 		&i.CreatedAt,
@@ -67,28 +60,19 @@ func (q *Queries) DeleteTodoItem(ctx context.Context, id string) error {
 }
 
 const getTodoItem = `-- name: GetTodoItem :one
-SELECT id, task_id, title, completed, position, created_at, updated_at
+SELECT id, task_id, title, description, completed, position, created_at, updated_at
 FROM todo_items
 WHERE id = $1
 `
 
-type GetTodoItemRow struct {
-	ID        string
-	TaskID    string
-	Title     string
-	Completed bool
-	Position  int32
-	CreatedAt pgtype.Timestamptz
-	UpdatedAt pgtype.Timestamptz
-}
-
-func (q *Queries) GetTodoItem(ctx context.Context, id string) (GetTodoItemRow, error) {
+func (q *Queries) GetTodoItem(ctx context.Context, id string) (TodoItem, error) {
 	row := q.db.QueryRow(ctx, getTodoItem, id)
-	var i GetTodoItemRow
+	var i TodoItem
 	err := row.Scan(
 		&i.ID,
 		&i.TaskID,
 		&i.Title,
+		&i.Description,
 		&i.Completed,
 		&i.Position,
 		&i.CreatedAt,
@@ -101,44 +85,38 @@ const updateTodoItem = `-- name: UpdateTodoItem :one
 UPDATE todo_items
 SET task_id = $2,
     title = $3,
-    completed = $4,
-    position = $5,
+    description = $4,
+    completed = $5,
+    position = $6,
     updated_at = now()
 WHERE id = $1
-RETURNING id, task_id, title, completed, position, created_at, updated_at
+RETURNING id, task_id, title, description, completed, position, created_at, updated_at
 `
 
 type UpdateTodoItemParams struct {
-	ID        string
-	TaskID    string
-	Title     string
-	Completed bool
-	Position  int32
+	ID          string
+	TaskID      string
+	Title       string
+	Description pgtype.Text
+	Completed   bool
+	Position    int32
 }
 
-type UpdateTodoItemRow struct {
-	ID        string
-	TaskID    string
-	Title     string
-	Completed bool
-	Position  int32
-	CreatedAt pgtype.Timestamptz
-	UpdatedAt pgtype.Timestamptz
-}
-
-func (q *Queries) UpdateTodoItem(ctx context.Context, arg UpdateTodoItemParams) (UpdateTodoItemRow, error) {
+func (q *Queries) UpdateTodoItem(ctx context.Context, arg UpdateTodoItemParams) (TodoItem, error) {
 	row := q.db.QueryRow(ctx, updateTodoItem,
 		arg.ID,
 		arg.TaskID,
 		arg.Title,
+		arg.Description,
 		arg.Completed,
 		arg.Position,
 	)
-	var i UpdateTodoItemRow
+	var i TodoItem
 	err := row.Scan(
 		&i.ID,
 		&i.TaskID,
 		&i.Title,
+		&i.Description,
 		&i.Completed,
 		&i.Position,
 		&i.CreatedAt,
