@@ -1,6 +1,10 @@
 package auth
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/Najah7/task2schedule/internal/domain/shared"
+)
 
 var (
 	ErrUserIDEmpty             = errors.New("user ID cannot be empty")
@@ -8,6 +12,8 @@ var (
 	ErrPasswordMustNotBeHashed = errors.New("password must not be hashed")
 	ErrFirstNameRequired       = errors.New("first name is required")
 )
+
+type UserID shared.ID
 
 type User struct {
 	ID       UserID

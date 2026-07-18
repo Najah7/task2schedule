@@ -1,11 +1,11 @@
 package adapters
 
 import (
-	"github.com/Najah7/task2schedule/internal/domain/common"
+	"github.com/Najah7/task2schedule/internal/domain/shared"
 	"github.com/oklog/ulid/v2"
 )
 
-var _ common.IDGenerator = ULIDGenerator{}
+var _ shared.IDGenerator = ULIDGenerator{}
 
 type ULIDGenerator struct{}
 

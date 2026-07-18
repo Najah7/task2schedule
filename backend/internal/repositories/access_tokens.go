@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Najah7/task2schedule/internal/domain/auth"
+	"github.com/Najah7/task2schedule/internal/domain/shared"
 	"github.com/Najah7/task2schedule/internal/repositories/sqlc"
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -23,13 +24,13 @@ func NewAccessTokenRepository(db sqlc.DBTX) *AccessTokenRepository {
 }
 
 func recordToAccessToken(t sqlc.AccessToken) (auth.AccessToken, error) {
-	userID, err := auth.NewUserID(t.UserID)
+	ID, err := shared.NewID(t.UserID)
 	if err != nil {
 		return auth.NewZeroAccessToken(), err
 	}
 	accessToken, err := auth.NewExistingAccessToken(
 		t.Token,
-		userID,
+		auth.UserID(ID),
 		pgTimeUnix(t.ExpiresAt),
 		pgTimeUnix(t.RevokedAt),
 		pgTimeUnix(t.CreatedAt),

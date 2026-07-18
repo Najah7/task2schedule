@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/Najah7/task2schedule/internal/domain/auth"
+	"github.com/Najah7/task2schedule/internal/domain/shared"
 	"github.com/Najah7/task2schedule/internal/repositories/sqlc"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -32,13 +33,13 @@ func recordToUser(record sqlc.User) (auth.User, error) {
 		return auth.NewZeroUser(), err
 	}
 
-	uID, err := auth.NewUserID(record.ID)
+	ID, err := shared.NewID(record.ID)
 	if err != nil {
 		return auth.NewZeroUser(), err
 	}
 
 	name := auth.NewUserName(record.FirstName, record.LastName)
-	return auth.NewUser(uID, e, p, name), nil
+	return auth.NewUser(auth.UserID(ID), e, p, name), nil
 }
 
 func (r UserRepository) Get(ctx context.Context, id auth.UserID) (auth.User, error) {
