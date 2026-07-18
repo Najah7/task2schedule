@@ -1,0 +1,15 @@
+DROP TABLE task_tag_assignments;
+DROP TABLE task_tags;
+DROP TABLE todo_list_task_schedules;
+DROP TABLE todo_list_items;
+DROP TABLE task_schedule_frequencies;
+DROP TABLE task_schedules;
+DROP TABLE todo_item_frequencies;
+DROP TABLE todo_items;
+DROP TABLE todo_lists;
+DROP TABLE tasks;
+DROP TABLE projects;
+DROP TABLE project_type_master;
+DROP TABLE task_frequency_master;
+DROP TABLE task_status_master;
+DROP TABLE task_priority_master;
