@@ -51,6 +51,10 @@ service, tests there. No domain source direct under `internal/domain`.
 - Own invariant, state change, state query.
 - New-state and restored-state factory may differ.
 - Model absent state explicit. Never infer state from invalid DB data.
+- `NewXXX`: minimal required fields only. Keep create path simple.
+- `NewXXXWithDetails`: richer create path when optional/detail fields are provided.
+- `NewExistingXXX`: restore persisted state. Accept all stored fields, including timestamps.
+- `NewZeroXXX`: explicit absent/invalid return value.
 
 ### Service
 
