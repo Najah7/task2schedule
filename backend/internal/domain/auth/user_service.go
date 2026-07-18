@@ -3,6 +3,8 @@ package auth
 import (
 	"context"
 	"errors"
+
+	"github.com/Najah7/task2schedule/internal/domain/shared"
 )
 
 var (
@@ -43,7 +45,7 @@ func (s *UserService) GetUserByEmail(ctx context.Context, email string) (User, e
 }
 
 func (s *UserService) CreateUser(ctx context.Context, idGen func() string, email, password string) (User, error) {
-	userID, err := NewUserID(idGen())
+	ID, err := shared.NewID(idGen())
 	if err != nil {
 		return NewZeroUser(), err
 	}
@@ -58,6 +60,7 @@ func (s *UserService) CreateUser(ctx context.Context, idGen func() string, email
 		return User{}, err
 	}
 
+	userID := UserID(ID)
 	newUser := NewUser(userID, e, p, NewUserName("", ""))
 
 	u, err := s.repo.GetByEmail(ctx, e.String())

@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"testing"
+
+	"github.com/Najah7/task2schedule/internal/domain/shared"
 )
 
 var (
@@ -201,9 +203,9 @@ func (r *stubUserRepository) Update(_ context.Context, user User) (User, error) 
 
 func existingUser(t *testing.T) User {
 	t.Helper()
-	id, err := NewUserID("user-1")
+	id, err := shared.NewID("user-1")
 	if err != nil {
-		t.Fatalf("NewUserID() error = %v", err)
+		t.Fatalf("NewID() error = %v", err)
 	}
 	email, err := NewEmail("user@example.com")
 	if err != nil {
@@ -213,7 +215,7 @@ func existingUser(t *testing.T) User {
 	if err != nil {
 		t.Fatalf("NewPassword() error = %v", err)
 	}
-	return NewUser(id, email, password, NewUserName("John", "Doe"))
+	return NewUser(UserID(id), email, password, NewUserName("John", "Doe"))
 }
 
 func assertUserEqual(t *testing.T, got, want User) {

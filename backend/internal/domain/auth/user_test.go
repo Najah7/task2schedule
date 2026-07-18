@@ -3,14 +3,16 @@ package auth
 import (
 	"errors"
 	"testing"
+
+	"github.com/Najah7/task2schedule/internal/domain/shared"
 )
 
-func makeUserInputs(t *testing.T) (UserID, Email, Password) {
+func makeUserInputs(t *testing.T) (shared.ID, Email, Password) {
 	t.Helper()
 
-	id, err := NewUserID("user-1")
+	id, err := shared.NewID("user-1")
 	if err != nil {
-		t.Fatalf("NewUserID() error = %v", err)
+		t.Fatalf("NewID() error = %v", err)
 	}
 	email, err := NewEmail("user@example.com")
 	if err != nil {
@@ -26,7 +28,7 @@ func makeUserInputs(t *testing.T) (UserID, Email, Password) {
 
 func TestUserLifecycle(t *testing.T) {
 	id, email, password := makeUserInputs(t)
-	user := NewUser(id, email, password, NewUserName("", ""))
+	user := NewUser(UserID(id), email, password, NewUserName("", ""))
 
 	updated, err := user.UpdateName(NewUserName("Jane", "Doe"))
 	if err != nil {
@@ -54,7 +56,7 @@ func TestUserLifecycle(t *testing.T) {
 
 func TestUserUpdateNameRequiresFirstName(t *testing.T) {
 	id, email, password := makeUserInputs(t)
-	user := NewUser(id, email, password, NewUserName("", ""))
+	user := NewUser(UserID(id), email, password, NewUserName("", ""))
 
 	got, err := user.UpdateName(NewUserName("", "Doe"))
 	if !errors.Is(err, ErrFirstNameRequired) {
@@ -67,7 +69,7 @@ func TestUserUpdateNameRequiresFirstName(t *testing.T) {
 
 func TestUserLoginRejectsWrongCredentials(t *testing.T) {
 	id, email, password := makeUserInputs(t)
-	user := NewUser(id, email, password, NewUserName("", ""))
+	user := NewUser(UserID(id), email, password, NewUserName("", ""))
 
 	wrongEmail, _ := NewEmail("other@example.com")
 	wrongPassword, _ := NewPassword("WrongPassword1!")
