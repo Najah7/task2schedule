@@ -1,10 +1,10 @@
 # Task2Schedule
 
-Task2Schedule turns task lists into actionable schedules. Product focus:
+Task2Schedule turns organized tasks into a daily execution plan. Product focus:
 
-- Goal setting
-- Task and todo management
-- Schedule generation
+- Project, task, TodoItem, and TaskSchedule management
+- Daily TodoList generation
+- Timeline planning around fixed TaskSchedules
 - Google Calendar integration
 
 ## Repository
