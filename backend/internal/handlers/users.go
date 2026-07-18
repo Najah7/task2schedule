@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/Najah7/task2schedule/internal/domain/auth"
-	"github.com/Najah7/task2schedule/internal/domain/common"
+	"github.com/Najah7/task2schedule/internal/domain/shared"
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
@@ -14,10 +14,10 @@ const UserIDContextKey = "userID"
 
 type UserHandler struct {
 	svc   *auth.UserService
-	idGen common.IDGenerator
+	idGen shared.IDGenerator
 }
 
-func NewUserHandler(svc *auth.UserService, idGen common.IDGenerator) *UserHandler {
+func NewUserHandler(svc *auth.UserService, idGen shared.IDGenerator) *UserHandler {
 	return &UserHandler{
 		svc:   svc,
 		idGen: idGen,
